@@ -1,0 +1,71 @@
+<script>
+    /**
+    Mooshak the mouse has been placed in a maze. There is a huge chunk of cheese somehwere in the maze.
+    The maze is represented as a 2D array of integers (eg 8x8), where 0 represents walls, 1 is path where Mooshak can move, and 9 is the huge chunk of cheese. Mooshak starts in the top-left corner at 0,0.
+
+    Write code to determine id Mooshak can reach the huge chnk of cheese. 
+    */
+    
+    const log = (...value) => console.log(...value)
+    const isValidForPath = (row, col) => (row < totalRows && col < totalCols) &&    
+        (matrix[row][col] === 1 || matrix[row][col] === 9)
+    
+    const matrix = [
+        [1,0,1,1,1,0],
+        [1,1,1,0,1,0],
+        [0,0,0,1,1,0],
+        [0,0,0,1,0,0],
+        [0,0,0,1,1,0]
+    ]
+    
+    const totalRows = matrix.length;
+    const totalCols = matrix[0].length;
+    let path = new Map();
+    let pathExists = 0;
+    let traversalEnded = 0;
+    let lastRow = 0;
+    let lastCol = 0;
+    
+    for(let i = lastRow; i < totalRows && traversalEnded == 0; i++){
+        for(let j = lastCol; j < totalCols && traversalEnded == 0; j++){
+            
+            log(i, j, matrix[i][j])
+            if(matrix[i][j] === 0){
+                traversalEnded = 1;
+                break;
+            }
+    
+    
+            if(matrix[i][j] == 9){
+                path.set(`${i},${j}`, true);
+                pathExists = 1;
+                traversalEnded = 1;
+                break;
+            }
+    
+            path.set(`${i},${j}`, true);
+            lastRow = i;
+            lastCol = j;
+    
+            if(isValidForPath(i, j+1) && !path.has(`${i},${j+1}`)) continue;
+    
+            if(isValidForPath(i+1, j) && !path.has(`${i+1},${j}`)) {
+                lastCol=j;
+                break;
+            }
+    
+            if(j > 0 && isValidForPath(i, j-1) && !path.has(`${i},${j-1}`)){
+                i=i-1;
+                lastCol=j-1;
+                break;
+            }
+    
+            if(i > 0 && isValidForPath(i-1, j) && !path.has(`${i-1},${j}`)){            
+                i=i-2;
+                break;
+            }
+        }
+    }
+    
+    log("pathExists:", pathExists, path)
+    </script>
