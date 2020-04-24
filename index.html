@@ -5,8 +5,9 @@
 
     Write code to determine id Mooshak can reach the huge chnk of cheese. 
     */
-    
     const log = (...value) => console.log(...value)
+
+    // check if value is valid for traversal
     const isValidForPath = (row, col) => (row < totalRows && col < totalCols) &&    
         (matrix[row][col] === 1 || matrix[row][col] === 9)
     
@@ -44,24 +45,28 @@
             }
     
             path.set(`${i},${j}`, true);
-            lastRow = i;
-            lastCol = j;
-    
+            lastRow = i; // set last travered row for using in next iteration
+            lastCol = j; // set last travered column for using in next iteration
+
+            // check move for right
             if(isValidForPath(i, j+1) && !path.has(`${i},${j+1}`)) continue;
     
+            // check move for bottom
             if(isValidForPath(i+1, j) && !path.has(`${i+1},${j}`)) {
-                lastCol=j;
+                lastCol=j; // update lastCol to current column position to use in next iteration
                 break;
             }
     
+            // check move for left
             if(j > 0 && isValidForPath(i, j-1) && !path.has(`${i},${j-1}`)){
-                i=i-1;
-                lastCol=j-1;
+                i=i-1;  // update i to one less row as it will increment in next iteration, and we want to remain in current row
+                lastCol=j-1;  // update lastCol to one less column position to use in next iteration
                 break;
             }
     
+            // check move for top
             if(i > 0 && isValidForPath(i-1, j) && !path.has(`${i-1},${j}`)){            
-                i=i-2;
+                i=i-2;  // update i to two less row as it will increment in next iteration, and we want to move to one less row
                 break;
             }
         }
