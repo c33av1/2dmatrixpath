@@ -1,0 +1,63 @@
+<script>
+    /**
+    Mooshak the mouse has been placed in a maze. There is a huge chunk of cheese somehwere in the maze.
+    The maze is represented as a 2D array of integers (eg 8x8), where 0 represents walls, 1 is path where Mooshak can move, and 9 is the huge chunk of cheese. Mooshak starts in the top-left corner at 0,0.
+
+    Write code to determine id Mooshak can reach the huge chnk of cheese. 
+    */
+    const log = (...value) => console.log(...value)
+
+    const matrix = [
+        [1,0,1,1,1,0],
+        [1,1,1,0,1,0],
+        [0,0,0,1,1,0],
+        [0,0,0,1,0,0],
+        [0,0,0,1,1,9]
+    ]
+    
+    const totalRows = matrix.length;
+    const totalCols = matrix[0].length;
+    let path = new Map();
+    let pathExists = 0;
+
+    // check if value in next possible index is valid for traversal
+    const isValidIndexValue = (row, col) => row >= 0 && col >= 0 && (row < totalRows && col < totalCols) &&    
+    (matrix[row][col] === 1 || matrix[row][col] === 9)
+    
+    const cheeseFound = (row, col) => matrix[row][col] === 9;
+
+    const addPositionToPath = (i, j) => path.set(`${i},${j}`, true);
+
+    const isExistingIndex = (row, col) => path.has(`${row},${col}`);
+
+    const getNextMove = (i, j) => {
+        if(isValidIndexValue(i, j-1) && !isExistingIndex(i, j-1)) return { row: i, col: j-1 }; // left
+        if(isValidIndexValue(i, j+1) && !isExistingIndex(i, j+1)) return { row: i, col: j+1 }; // right
+        if(isValidIndexValue(i+1, j) && !isExistingIndex(i+1, j)) return { row: i+1, col: j }; // down
+        if(isValidIndexValue(i-1, j) && !isExistingIndex(i-1, j)) return { row: i-1, col: j }; // up
+
+        return null;
+    }
+
+    i = 0;
+    j = 0;
+    while(pathExists === 0){
+        if(!isValidIndexValue(i,j)) break;
+
+        addPositionToPath(i, j);
+        if(cheeseFound(i, j)){ 
+            pathExists = 1;
+            break;
+        }
+
+        const newIndex = getNextMove(i, j);
+        if(newIndex === null) {
+            break;
+        }
+        
+        i = newIndex.row;
+        j = newIndex.col;
+    }
+    
+    log("pathExists:", pathExists, path)
+    </script>
