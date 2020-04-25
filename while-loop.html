@@ -19,6 +19,7 @@
     const totalCols = matrix[0].length;
     let path = new Map();
     let pathExists = 0;
+    let traversalEnded = 0;
 
     // check if value in next possible index is valid for traversal
     const isValidIndexValue = (row, col) => row >= 0 && col >= 0 && (row < totalRows && col < totalCols) &&    
@@ -41,12 +42,13 @@
 
     i = 0;
     j = 0;
-    while(pathExists === 0){
-        if(!isValidIndexValue(i,j)) break;
+    if(!isValidIndexValue(i,j)) traversalEnded = 1;
 
+    while(traversalEnded === 0){
         addPositionToPath(i, j);
         if(cheeseFound(i, j)){ 
             pathExists = 1;
+            traversalEnded = 1;
             break;
         }
 
