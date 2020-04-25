@@ -7,16 +7,12 @@
     */
     const log = (...value) => console.log(...value)
 
-    // check if value is valid for traversal
-    const isValidForPath = (row, col) => (row < totalRows && col < totalCols) &&    
-        (matrix[row][col] === 1 || matrix[row][col] === 9)
-    
     const matrix = [
         [1,0,1,1,1,0],
         [1,1,1,0,1,0],
         [0,0,0,1,1,0],
         [0,0,0,1,0,0],
-        [0,0,0,1,1,0]
+        [0,0,0,1,1,9]
     ]
     
     const totalRows = matrix.length;
@@ -24,10 +20,61 @@
     let path = new Map();
     let pathExists = 0;
     let traversalEnded = 0;
-    let lastRow = 0;
-    let lastCol = 0;
+    // let lastRow = 0;
+    // let lastCol = 0;
     
-    for(let i = lastRow; i < totalRows && traversalEnded == 0; i++){
+    let rowPointer = 0;
+    let columnPointer = 0;
+
+    // check if value is valid for traversal
+    const isValidForPath = (row, col) => (row < totalRows && col < totalCols) &&    
+    (matrix[row][col] === 1 || matrix[row][col] === 9)
+    
+    const cheeseFound = (row, col) => matrix[row][col] === 9
+    const canMoveLeft = (i, j) => j > 0 && isValidForPath(i, j - 1) && !path.has(`${i},${j-1}`)
+    const canMoveRight = (i, j) => isValidForPath(i, j + 1) && !path.has(`${i},${j+1}`)
+    const canMoveDown = (i, j) => isValidForPath(i + 1, j) && !path.has(`${i+1},${j}`)
+    const canMoveUp = (i, j) => i > 0 && isValidForPath(i - 1, j) && !path.has(`${i-1},${j}`)
+    const addPositionToPath = (i, j) => {
+        path.set(`${i},${j}`, true);
+        rowPointer = i;
+        columnPointer = j;
+    }
+
+    for(i = rowPointer; i <= totalRows && traversalEnded === 0; i++){
+        for(j = columnPointer; j <= totalCols && traversalEnded === 0; j++){
+            if(!isValidForPath(i,j)) {
+                traversalEnded = 1;
+                break;
+            }
+
+            if(cheeseFound(i, j)){
+                addPositionToPath(i, j);
+                pathExists = 1;
+                traversalEnded = 1;
+                break;
+            }
+
+            addPositionToPath(i, j);
+            if(canMoveRight(i, j)) continue; // continue with iteration as usual
+            if(canMoveDown(i, j)){
+                // update columnPointer to current column position to use in next iteration
+                columnPointer = j; //TODO - remove---
+                break; // skip column loop
+            }
+            if(canMoveLeft(i, j)){
+                i--; // decrement this as next iteration we want to be in current row (next iteration will automatically increment this thus keeping value of "i" the same)
+                columnPointer = j - 1; // one less column
+                break;
+            }
+            if(canMoveUp(i, j)){
+                i = i - 2; // update i to two less row as it will increment in next iteration, and we want to move to one less row
+                break;
+            }
+        }
+    }
+
+    /*for(let i = lastRow; i < totalRows && traversalEnded == 0; i++){
         for(let j = lastCol; j < totalCols && traversalEnded == 0; j++){
             
             log(i, j, matrix[i][j])
@@ -70,7 +117,7 @@
                 break;
             }
         }
-    }
+    }*/
     
     log("pathExists:", pathExists, path)
     </script>
