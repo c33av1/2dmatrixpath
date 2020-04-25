@@ -45,14 +45,10 @@
     const findPath = (i, j) => {
         addPositionToPath(i, j);
 
-        if(cheeseFound(i, j)){ 
-            return 1
-        }
+        if(cheeseFound(i, j)) return 1;
 
         const newIndex = getNextMove(i, j);
-        if(newIndex === null) {
-            return 0;
-        }
+        if(newIndex === null) return 0;
 
         return findPath(newIndex.row, newIndex.col)
     }
