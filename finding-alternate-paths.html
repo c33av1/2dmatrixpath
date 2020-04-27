@@ -1,0 +1,77 @@
+<script>
+    /**
+    Mooshak the mouse has been placed in a maze. There is a huge chunk of cheese somehwere in the maze.
+    The maze is represented as a 2D array of integers (eg 8x8), where 0 represents walls, 1 is path where Mooshak can move, and 9 is the huge chunk of cheese. Mooshak starts in the top-left corner at 0,0.
+
+    Write code to determine id Mooshak can reach the huge chnk of cheese. 
+    */
+    const log = (...value) => console.log(...value)
+
+    const matrix = [
+        [1,1,1,1,1,1],
+        [1,1,1,0,1,0],
+        [0,0,1,1,0,0],
+        [0,0,0,1,0,0],
+        [0,0,0,1,1,9]
+    ]
+    
+    const totalRows = matrix.length;
+    const totalCols = matrix[0].length;
+    let path = new Map();
+    let pathExists = 0;
+
+    // check if value in next possible index is valid for traversal
+    const isValidIndexValue = (row, col) => row >= 0 && col >= 0 && (row < totalRows && col < totalCols) &&    
+    (matrix[row][col] === 1 || matrix[row][col] === 9)
+    
+    const cheeseFound = (row, col) => matrix[row][col] === 9;
+
+    const addPositionToPath = (row, col) => path.set(`${row},${col}`, true);
+
+    const isExistingIndex = (row, col) => path.has(`${row},${col}`);
+
+    const getNextMove = (i, j) => {
+        const allowedMoves = {};
+        if(isValidIndexValue(i, j-1) && !isExistingIndex(i, j-1)) allowedMoves['LEFT'] = { row: i, col: j-1 }; // left
+        if(isValidIndexValue(i, j+1) && !isExistingIndex(i, j+1)) allowedMoves['RIGHT'] = { row: i, col: j+1 }; // right
+        if(isValidIndexValue(i+1, j) && !isExistingIndex(i+1, j)) allowedMoves['DOWN'] = { row: i+1, col: j }; // down
+        if(isValidIndexValue(i-1, j) && !isExistingIndex(i-1, j)) allowedMoves['UP'] = { row: i-1, col: j }; // up
+
+        return allowedMoves;
+    }
+
+    currentRow = 0;
+    currentCol = 0;
+
+    const findPath = (i, j) => {
+        addPositionToPath(i, j);
+
+        console.log("-----:",i, j )
+        if(cheeseFound(i, j)) return 1;
+
+        const allowedPaths = getNextMove(i, j);
+        console.log("allowedPathsallowedPaths:",allowedPaths )
+       // if(allowedPaths === null) return 0;
+
+        if(allowedPaths['LEFT'] && findPath(allowedPaths['LEFT'].row, allowedPaths['LEFT'].col) == 1) return 1;
+        if(allowedPaths['RIGHT'] && findPath(allowedPaths['RIGHT'].row, allowedPaths['RIGHT'].col)) return 1;
+        if(allowedPaths['DOWN'] && findPath(allowedPaths['DOWN'].row, allowedPaths['DOWN'].col)) return 1 ;
+        if(allowedPaths['UP'] && findPath(allowedPaths['UP'].row, allowedPaths['UP'].col)) return 1;
+        return 0;
+    
+
+        // const totalAllowedPaths = allowedPaths.length
+        // if(totalAllowedPaths === 0) return 0;
+
+        // for(let p = 0; p <= totalAllowedPaths; p++){ 
+        //   //  console.log("----", allowedPaths[p], allowedPaths[p].row, allowedPaths[p].col)
+        //     return findPath(allowedPaths[p].row, allowedPaths[p].col);
+        // }
+        //return findPath(newIndex.row, newIndex.col)
+    }
+
+    pathExists = !isValidIndexValue(currentRow, currentCol) ? 0 : findPath(currentRow, currentCol);
+
+    
+    log("pathExists:", pathExists, path)
+    </script>
