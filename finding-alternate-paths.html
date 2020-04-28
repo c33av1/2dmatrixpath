@@ -9,15 +9,15 @@
 
     const matrix = [
         [1,1,1,1,1,1],
-        [1,1,1,0,1,0],
-        [0,0,1,1,0,0],
+        [1,1,0,0,1,0],
+        [0,1,1,1,0,0],
         [0,0,0,1,0,0],
         [0,0,0,1,1,9]
     ]
     
     const totalRows = matrix.length;
     const totalCols = matrix[0].length;
-    let path = new Map();
+    let traversal = new Map();
     let pathExists = 0;
 
     // check if value in next possible index is valid for traversal
@@ -26,9 +26,9 @@
     
     const cheeseFound = (row, col) => matrix[row][col] === 9;
 
-    const addPositionToPath = (row, col) => path.set(`${row},${col}`, true);
+    const addPositionToPath = (row, col) => traversal.set(`${row},${col}`, true);
 
-    const isExistingIndex = (row, col) => path.has(`${row},${col}`);
+    const isExistingIndex = (row, col) => traversal.has(`${row},${col}`);
 
     const getNextMove = (i, j) => {
         const allowedMoves = {};
@@ -40,38 +40,37 @@
         return allowedMoves;
     }
 
-    currentRow = 0;
-    currentCol = 0;
-
-    const findPath = (i, j) => {
+    const findPath = (i, j, path) => {
         addPositionToPath(i, j);
 
-        console.log("-----:",i, j )
-        if(cheeseFound(i, j)) return 1;
+        const newTraversalPath = path.map(p => p)
+        newTraversalPath.push({i, j})
+        
+        if(cheeseFound(i, j)) return {status: 1, newTraversalPath};
 
         const allowedPaths = getNextMove(i, j);
-        console.log("allowedPathsallowedPaths:",allowedPaths )
-       // if(allowedPaths === null) return 0;
+        
+        if(allowedPaths['LEFT']){
+            const xpath = findPath(allowedPaths['LEFT'].row, allowedPaths['LEFT'].col, newTraversalPath);
+            if(xpath.status === 1) return xpath;
+        }
+        if(allowedPaths['RIGHT']){
+            const xpath = findPath(allowedPaths['RIGHT'].row, allowedPaths['RIGHT'].col, newTraversalPath);
+            if(xpath.status === 1) return xpath;
+        }
+        if(allowedPaths['DOWN']){
+            const xpath = findPath(allowedPaths['DOWN'].row, allowedPaths['DOWN'].col, newTraversalPath);
+            if(xpath.status === 1) return xpath;
+        }
+        if(allowedPaths['UP']){
+            const xpath = findPath(allowedPaths['UP'].row, allowedPaths['UP'].col, newTraversalPath);
+            if(xpath.status === 1) return xpath;
+        }
 
-        if(allowedPaths['LEFT'] && findPath(allowedPaths['LEFT'].row, allowedPaths['LEFT'].col) == 1) return 1;
-        if(allowedPaths['RIGHT'] && findPath(allowedPaths['RIGHT'].row, allowedPaths['RIGHT'].col)) return 1;
-        if(allowedPaths['DOWN'] && findPath(allowedPaths['DOWN'].row, allowedPaths['DOWN'].col)) return 1 ;
-        if(allowedPaths['UP'] && findPath(allowedPaths['UP'].row, allowedPaths['UP'].col)) return 1;
-        return 0;
-    
-
-        // const totalAllowedPaths = allowedPaths.length
-        // if(totalAllowedPaths === 0) return 0;
-
-        // for(let p = 0; p <= totalAllowedPaths; p++){ 
-        //   //  console.log("----", allowedPaths[p], allowedPaths[p].row, allowedPaths[p].col)
-        //     return findPath(allowedPaths[p].row, allowedPaths[p].col);
-        // }
-        //return findPath(newIndex.row, newIndex.col)
+        return { status: 0, newTraversalPath };
     }
 
-    pathExists = !isValidIndexValue(currentRow, currentCol) ? 0 : findPath(currentRow, currentCol);
+    const {status, newTraversalPath: path} = !isValidIndexValue(0, 0) ? {status: 0, newTraversalPath: []} : findPath(0, 0, []);
 
-    
-    log("pathExists:", pathExists, path)
+    log("pathExists:", status, path)
     </script>
